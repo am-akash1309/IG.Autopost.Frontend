@@ -3,9 +3,11 @@ import { isPlatformBrowser } from '@angular/common';
 import { Router, NavigationEnd, RouterOutlet, RouterLink } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
+import { NavbarComponent } from './components/navbar/navbar.component';
+
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink],
+  imports: [RouterOutlet, RouterLink, NavbarComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
   encapsulation: ViewEncapsulation.None

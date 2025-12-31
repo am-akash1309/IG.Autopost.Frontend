@@ -1,0 +1,59 @@
+<div class="login-container">
+    <main class="main-content">
+        <!-- Login Section -->
+        <section class="login-card">
+            <h1 class="title">Welcome!</h1>
+            <p class="subtitle">Secure login using Instagram OTP</p>
+
+            <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+                <div class="form-group">
+                    <label class="label">Instagram Username</label>
+                    <input type="text" class="input-field" name="username" [(ngModel)]="username" required
+                        placeholder="&#64;your_username">
+                </div>
+
+                <div class="form-group">
+                    <label class="label">One-Time Password (OTP)</label>
+                    <input type="password" class="input-field" name="otp" [(ngModel)]="otp" required
+                        placeholder="Enter 6-digit OTP">
+                </div>
+
+                <button type="submit" class="login-btn" [disabled]="loading || !loginForm.form.valid">
+                    {{ loading ? 'Verifying...' : 'Sign In' }}
+                </button>
+
+                <p *ngIf="error" style="color: #e74c3c; margin-top: 1rem; font-size: 0.9rem; text-align: center;">
+                    {{ error }}
+                </p>
+            </form>
+        </section>
+
+        <!-- Instructions Section -->
+        <section class="instructions">
+            <h2 class="instruction-title">How to Generate OTP?</h2>
+            <ul class="points">
+                <li class="point-item">
+                    <div class="point-number">1</div>
+                    <div class="point-text">
+                        Click on this <a href="https://ig.me/m/coimbatore_pet_adoption" target="_blank"
+                            class="dm-link">Magic Link</a>
+                        to open our Instagram DM.
+                    </div>
+                </li>
+                <li class="point-item">
+                    <div class="point-number">2</div>
+                    <div class="point-text">
+                        Send a message with the command: <span class="code-snippet">/login &#64;your_username</span>
+                    </div>
+                </li>
+                <li class="point-item">
+                    <div class="point-number">3</div>
+                    <div class="point-text">
+                        You will receive an instant reply with a 6-digit OTP.
+                        Enter that OTP in the form above to access your dashboard.
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </main>
+</div>
