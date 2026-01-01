@@ -1,59 +1,80 @@
 <div class="login-container">
     <main class="main-content">
         <!-- Login Section -->
-        <section class="login-card">
-            <h1 class="title">Welcome!</h1>
-            <p class="subtitle">Secure login using Instagram OTP</p>
+        <section class="login-card glass-panel">
+            <div class="header-section">
+                <h1 class="page-title">Welcome!</h1>
+                <p class="page-subtitle">Secure login using Instagram OTP</p>
+            </div>
 
-            <form (ngSubmit)="onLogin()" #loginForm="ngForm">
-                <div class="form-group">
-                    <label class="label">Instagram Username</label>
-                    <input type="text" class="input-field" name="username" [(ngModel)]="username" required
-                        placeholder="&#64;your_username">
+            <form (ngSubmit)="onLogin()" #loginForm="ngForm" class="post-form">
+                <div class="input-group">
+                    <label>Instagram Username</label>
+                    <div class="input-with-icon">
+                        <i class="material-icons">alternate_email</i>
+                        <input type="text" name="username" [(ngModel)]="username" required placeholder="your_username">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="label">One-Time Password (OTP)</label>
-                    <input type="password" class="input-field" name="otp" [(ngModel)]="otp" required
-                        placeholder="Enter 6-digit OTP">
+                <div class="input-group">
+                    <label>One-Time Password (OTP)</label>
+                    <div class="input-with-icon">
+                        <i class="material-icons">lock_outline</i>
+                        <input type="password" name="otp" [(ngModel)]="otp" required placeholder="Enter 6-digit OTP">
+                    </div>
                 </div>
 
-                <button type="submit" class="login-btn" [disabled]="loading || !loginForm.form.valid">
-                    {{ loading ? 'Verifying...' : 'Sign In' }}
-                </button>
+                <div class="cta-container">
+                    <button type="submit" class="upload-button" [disabled]="loading || !loginForm.form.valid">
+                        <i class="material-icons" *ngIf="!loading">login</i>
+                        <span class="loader" *ngIf="loading"></span>
+                        <span>{{ loading ? 'Verifying...' : 'Sign In' }}</span>
+                    </button>
 
-                <p *ngIf="error" style="color: #e74c3c; margin-top: 1rem; font-size: 0.9rem; text-align: center;">
-                    {{ error }}
-                </p>
+                    <div class="validation-warning" *ngIf="error" style="margin-top: 16px;">
+                        <i class="material-icons">error_outline</i> {{ error }}
+                    </div>
+                </div>
             </form>
         </section>
 
         <!-- Instructions Section -->
-        <section class="instructions">
-            <h2 class="instruction-title">How to Generate OTP?</h2>
-            <ul class="points">
-                <li class="point-item">
-                    <div class="point-number">1</div>
-                    <div class="point-text">
-                        Click on this <a href="https://ig.me/m/coimbatore_pet_adoption" target="_blank"
-                            class="dm-link">Magic Link</a>
-                        to open our Instagram DM.
+        <section class="instructions glass-panel">
+            <div class="content-body">
+                <h2 class="instruction-title">How to Generate OTP?</h2>
+
+                <div class="policy-block">
+                    <div class="block-header">
+                        <span class="block-number">01</span>
+                        <h3 class="block-title">Open Instagram DM</h3>
                     </div>
-                </li>
-                <li class="point-item">
-                    <div class="point-number">2</div>
-                    <div class="point-text">
+                    <div class="block-content">
+                        Click on this <a (click)="openMagicLink($event)" class="dm-link">Magic Link</a>
+                        to open our Instagram direct messages.
+                    </div>
+                </div>
+
+                <div class="policy-block">
+                    <div class="block-header">
+                        <span class="block-number">02</span>
+                        <h3 class="block-title">Request OTP</h3>
+                    </div>
+                    <div class="block-content">
                         Send a message with the command: <span class="code-snippet">/login &#64;your_username</span>
                     </div>
-                </li>
-                <li class="point-item">
-                    <div class="point-number">3</div>
-                    <div class="point-text">
-                        You will receive an instant reply with a 6-digit OTP.
-                        Enter that OTP in the form above to access your dashboard.
+                </div>
+
+                <div class="policy-block">
+                    <div class="block-header">
+                        <span class="block-number">03</span>
+                        <h3 class="block-title">Enter OTP</h3>
                     </div>
-                </li>
-            </ul>
+                    <div class="block-content">
+                        You will receive a reply with a 6-digit OTP.
+                        Enter that OTP in the form to access your dashboard.
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 </div>

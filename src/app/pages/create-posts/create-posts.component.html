@@ -12,22 +12,34 @@
             <div class="form-grid top-controls">
                 <div class="input-group">
                     <label>What's the pet?</label>
-                    <div class="custom-select">
-                        <i class="material-icons">pets</i>
-                        <select formControlName="category" class="browser-default">
-                            <option value="dog">Dog / Puppy</option>
-                            <option value="cat">Cat / Kitten</option>
-                        </select>
+                    <div class="custom-select-wrapper" [class.active]="activeDropdown === 'category'">
+                        <div class="select-trigger" (click)="toggleDropdown($event, 'category')">
+                            <i class="material-icons">pets</i>
+                            <span>{{ getDisplayValue('category') }}</span>
+                            <i class="material-icons arrow">expand_more</i>
+                        </div>
+                        <div class="select-options" *ngIf="activeDropdown === 'category'">
+                            <div class="option" [class.selected]="postForm.value.category === 'dog'"
+                                (click)="selectOption('category', 'dog')">Dog / Puppy</div>
+                            <div class="option" [class.selected]="postForm.value.category === 'cat'"
+                                (click)="selectOption('category', 'cat')">Cat / Kitten</div>
+                        </div>
                     </div>
                 </div>
                 <div class="input-group">
                     <label>Post Topic</label>
-                    <div class="custom-select">
-                        <i class="material-icons">campaign</i>
-                        <select formControlName="action" class="browser-default">
-                            <option value="adoption">For Adoption</option>
-                            <option value="missing">Missing Pet</option>
-                        </select>
+                    <div class="custom-select-wrapper" [class.active]="activeDropdown === 'action'">
+                        <div class="select-trigger" (click)="toggleDropdown($event, 'action')">
+                            <i class="material-icons">campaign</i>
+                            <span>{{ getDisplayValue('action') }}</span>
+                            <i class="material-icons arrow">expand_more</i>
+                        </div>
+                        <div class="select-options" *ngIf="activeDropdown === 'action'">
+                            <div class="option" [class.selected]="postForm.value.action === 'adoption'"
+                                (click)="selectOption('action', 'adoption')">For Adoption</div>
+                            <div class="option" [class.selected]="postForm.value.action === 'missing'"
+                                (click)="selectOption('action', 'missing')">Missing Pet</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -62,7 +74,7 @@
             <!-- Contact & Format Section -->
             <div class="form-grid">
                 <div class="input-group">
-                    <label>Contact Number</label>
+                    <label>Contact Number (Optional)</label>
                     <div class="input-with-icon">
                         <i class="material-icons">phone</i>
                         <input type="tel" formControlName="phone" placeholder="10-digit number" maxlength="10">
@@ -74,13 +86,18 @@
                 </div>
                 <div class="input-group">
                     <label>Post Format</label>
-                    <div class="custom-select">
-                        <i class="material-icons">layers</i>
-                        <select formControlName="type" class="browser-default">
-                            <option value="post">Post</option>
-                            <option value="reel" disabled>Reel (Soon)</option>
-                            <option value="story" disabled>Story (Soon)</option>
-                        </select>
+                    <div class="custom-select-wrapper" [class.active]="activeDropdown === 'type'">
+                        <div class="select-trigger" (click)="toggleDropdown($event, 'type')">
+                            <i class="material-icons">layers</i>
+                            <span>{{ getDisplayValue('type') }}</span>
+                            <i class="material-icons arrow">expand_more</i>
+                        </div>
+                        <div class="select-options" *ngIf="activeDropdown === 'type'">
+                            <div class="option" [class.selected]="postForm.value.type === 'post'"
+                                (click)="selectOption('type', 'post')">Post</div>
+                            <div class="option disabled">Reel (Soon)</div>
+                            <div class="option disabled">Story (Soon)</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -97,10 +114,18 @@
                 <div class="input-group">
                     <label>City / District</label>
                     <div class="city-selector-container">
-                        <div class="custom-select city-select">
-                            <select formControlName="city" class="browser-default">
-                                <option *ngFor="let district of districts" [value]="district">{{district}}</option>
-                            </select>
+                        <div class="custom-select-wrapper city-select" [class.active]="activeDropdown === 'city'">
+                            <div class="select-trigger" (click)="toggleDropdown($event, 'city')">
+                                <span>{{ postForm.value.city }}</span>
+                                <i class="material-icons arrow">expand_more</i>
+                            </div>
+                            <div class="select-options scrollable" *ngIf="activeDropdown === 'city'">
+                                <div class="option" *ngFor="let district of districts"
+                                    [class.selected]="postForm.value.city === district"
+                                    (click)="selectOption('city', district)">
+                                    {{ district }}
+                                </div>
+                            </div>
                         </div>
                         <span class="state-suffix">Tamil Nadu</span>
                     </div>
@@ -113,8 +138,8 @@
             <div class="form-grid">
                 <div class="input-group full-width">
                     <label>Share your message (Optional)</label>
-                    <textarea formControlName="userCaption" placeholder="Describe the pet, age, etc..."
-                        rows="4"></textarea>
+                    <textarea formControlName="userCaption" placeholder="Describe the pet, age, etc..." rows="2"
+                        style="resize: none; height: 80px;"></textarea>
                 </div>
 
                 <div class="hashtags-display full-width">
@@ -126,10 +151,11 @@
             </div>
 
             <div class="cta-container">
-                <div class="validation-warning" *ngIf="postForm.errors?.['contactRequired'] && postForm.touched">
+                <div class="validation-warning" *ngIf="postForm.errors?.['contactRequired']">
                     <i class="material-icons">info</i> Please provide a contact number or use your Instagram username.
                 </div>
-                <button type="submit" class="upload-button">
+                <button type="submit" class="upload-button"
+                    [disabled]="postForm.invalid || previewUrls.length === 0 || isUploading">
                     <i class="material-icons" *ngIf="!isUploading">send</i>
                     <span class="loader" *ngIf="isUploading"></span>
                     <span>{{ isUploading ? 'Uploading...' : 'Preview & Upload' }}</span>

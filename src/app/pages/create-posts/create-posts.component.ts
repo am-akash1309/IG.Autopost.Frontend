@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { HostListener } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 
 @Component({
@@ -21,6 +22,7 @@ export class CreatePostsComponent {
     currentPreviewIndex = 0;
     dynamicHashtags = '';
     generatedFullCaption = '';
+    activeDropdown: string | null = null;
 
     districts = [
         'Ariyalur', 'Chengalpattu', 'Chennai', 'Coimbatore', 'Cuddalore',
@@ -191,5 +193,39 @@ export class CreatePostsComponent {
 
     closeModal() {
         this.showModal = false;
+    }
+
+    // Custom Dropdown Logic
+    toggleDropdown(event: Event, dropdownId: string) {
+        event.stopPropagation();
+        this.activeDropdown = this.activeDropdown === dropdownId ? null : dropdownId;
+    }
+
+    selectOption(controlName: string, value: any) {
+        this.postForm.get(controlName)?.setValue(value);
+        this.activeDropdown = null;
+    }
+
+    getDisplayValue(controlName: string): string {
+        const value = this.postForm.get(controlName)?.value;
+        if (!value) return 'Select...';
+
+        // Mapping for values that differ from labels
+        const mappings: any = {
+            'dog': 'Dog / Puppy',
+            'cat': 'Cat / Kitten',
+            'adoption': 'For Adoption',
+            'missing': 'Missing Pet',
+            'post': 'Post',
+            'reel': 'Reel',
+            'story': 'Story'
+        };
+
+        return mappings[value] || value;
+    }
+
+    @HostListener('document:click', ['$event'])
+    onDocumentClick() {
+        this.activeDropdown = null;
     }
 }

@@ -42,4 +42,22 @@ export class LoginComponent {
             }
         });
     }
+
+    openMagicLink(event: MouseEvent) {
+        event.preventDefault();
+        const username = 'coimbatore_pet_adoption';
+        const webUrl = `https://ig.me/m/${username}`;
+
+        // Detection for mobile/tablet
+        const isMobileOrTablet = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        if (isMobileOrTablet) {
+            // Using window.location.href instead of window.open often triggers App Links/Universal Links better on mobile
+            // It allows the OS to intercept the URL and open the registered app.
+            window.location.href = webUrl;
+        } else {
+            // On desktop, opening in a new tab is preferred
+            window.open(webUrl, '_blank');
+        }
+    }
 }
