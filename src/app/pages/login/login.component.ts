@@ -47,26 +47,17 @@ export class LoginComponent {
         event.preventDefault();
         const username = 'coimbatore_pet_adoption';
         const webUrl = `https://ig.me/m/${username}`;
+        const appUrl = `instagram://user?username=${username}`;
 
-        const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
-        const isAndroid = /android/i.test(userAgent);
-        const isIos = /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream;
+        // Detection for mobile/tablet
+        const isMobileOrTablet = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile/i.test(navigator.userAgent);
 
-        if (isAndroid) {
-            // Android Intent - Most reliable for Chrome/Samsung Internet to force app opening
-            // This specifically targets the Instagram package
-            const intentUrl = `intent://ig.me/m/${username}#Intent;package=com.instagram.android;scheme=https;end`;
-            window.location.href = intentUrl;
-
-            // Fallback for cases where intent might fail after a short delay
+        if (isMobileOrTablet) {
+            window.location.href = appUrl;
             setTimeout(() => {
-                window.location.href = webUrl;
+                window.open(webUrl, '_blank');
             }, 500);
-        } else if (isIos) {
-            // iOS handles https://ig.me/m/ well as a Universal Link
-            window.location.href = webUrl;
         } else {
-            // Desktop
             window.open(webUrl, '_blank');
         }
     }
