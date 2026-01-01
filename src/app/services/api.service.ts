@@ -85,4 +85,12 @@ export class ApiService {
     isLoggedIn(): boolean {
         return this.isAuthenticatedSubject.value;
     }
+
+    uploadMedia(formData: FormData): Observable<any> {
+        return this.http.post(`${this.BASE_URL}/media/upload`, formData);
+    }
+
+    getUserPosts(): Observable<any> {
+        return this.http.get(`${this.BASE_URL}/media/posts`);
+    }
 }

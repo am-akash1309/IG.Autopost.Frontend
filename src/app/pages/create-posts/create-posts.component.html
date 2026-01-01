@@ -1,0 +1,202 @@
+<div class="create-posts-container">
+    <div class="glass-panel">
+        <span class="badge">New Post</span>
+
+        <div class="header-section">
+            <h1 class="page-title">Create Post</h1>
+            <p class="page-subtitle">Share a pet in need with the community.</p>
+        </div>
+
+        <form [formGroup]="postForm" (ngSubmit)="onSubmit()" class="post-form">
+            <!-- Top Controls: Category & Action -->
+            <div class="form-grid top-controls">
+                <div class="input-group">
+                    <label>What's the pet?</label>
+                    <div class="custom-select">
+                        <i class="material-icons">pets</i>
+                        <select formControlName="category" class="browser-default">
+                            <option value="dog">Dog / Puppy</option>
+                            <option value="cat">Cat / Kitten</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Post Topic</label>
+                    <div class="custom-select">
+                        <i class="material-icons">campaign</i>
+                        <select formControlName="action" class="browser-default">
+                            <option value="adoption">For Adoption</option>
+                            <option value="missing">Missing Pet</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Media Upload Area -->
+            <div class="upload-section">
+                <label for="fileInput" class="upload-label">
+                    <div class="upload-placeholder" *ngIf="previewUrls.length === 0">
+                        <i class="material-icons">cloud_upload</i>
+                        <span>Click to upload photos or videos</span>
+                        <p class="upload-hint">Up to 10 files (JPG, PNG, MP4)</p>
+                    </div>
+
+                    <div class="preview-grid" *ngIf="previewUrls.length > 0">
+                        <div class="preview-item" *ngFor="let url of previewUrls; let i = index">
+                            <img [src]="url" *ngIf="!url.includes('video/mp4') && !url.includes('data:video')"
+                                alt="Preview">
+                            <video [src]="url" *ngIf="url.includes('video/mp4') || url.includes('data:video')"></video>
+                            <button type="button" class="remove-btn" (click)="removeFile(i)">
+                                <i class="material-icons">close</i>
+                            </button>
+                        </div>
+                        <div class="add-more-item" (click)="fileInput.click()">
+                            <i class="material-icons">add</i>
+                        </div>
+                    </div>
+                </label>
+                <input #fileInput id="fileInput" type="file" multiple (change)="onFileSelected($event)"
+                    accept="image/*,video/*" style="display: none;">
+            </div>
+
+            <!-- Contact & Format Section -->
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>Contact Number</label>
+                    <div class="input-with-icon">
+                        <i class="material-icons">phone</i>
+                        <input type="tel" formControlName="phone" placeholder="10-digit number" maxlength="10">
+                    </div>
+                    <label class="custom-checkbox instagram-toggle">
+                        <input type="checkbox" formControlName="useInstagram">
+                        <span class="checkbox-label">Use my Instagram username</span>
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label>Post Format</label>
+                    <div class="custom-select">
+                        <i class="material-icons">layers</i>
+                        <select formControlName="type" class="browser-default">
+                            <option value="post">Post</option>
+                            <option value="reel" disabled>Reel (Soon)</option>
+                            <option value="story" disabled>Story (Soon)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location Section -->
+            <div class="form-grid location-section">
+                <div class="input-group">
+                    <label>Area / Neighborhood</label>
+                    <div class="input-with-icon">
+                        <i class="material-icons">location_on</i>
+                        <input type="text" formControlName="locationDetail" placeholder="e.g. Peelamedu">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>City / District</label>
+                    <div class="city-selector-container">
+                        <div class="custom-select city-select">
+                            <select formControlName="city" class="browser-default">
+                                <option *ngFor="let district of districts" [value]="district">{{district}}</option>
+                            </select>
+                        </div>
+                        <span class="state-suffix">Tamil Nadu</span>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Caption & Hashtags -->
+            <div class="form-grid">
+                <div class="input-group full-width">
+                    <label>Share your message (Optional)</label>
+                    <textarea formControlName="userCaption" placeholder="Describe the pet, age, etc..."
+                        rows="4"></textarea>
+                </div>
+
+                <div class="hashtags-display full-width">
+                    <label>Hashtags</label>
+                    <div class="hashtags-content">
+                        {{ dynamicHashtags }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="cta-container">
+                <div class="validation-warning" *ngIf="postForm.errors?.['contactRequired'] && postForm.touched">
+                    <i class="material-icons">info</i> Please provide a contact number or use your Instagram username.
+                </div>
+                <button type="submit" class="upload-button">
+                    <i class="material-icons" *ngIf="!isUploading">send</i>
+                    <span class="loader" *ngIf="isUploading"></span>
+                    <span>{{ isUploading ? 'Uploading...' : 'Preview & Upload' }}</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Instagram Preview Modal -->
+    <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <div class="insta-post-preview">
+                <div class="insta-header">
+                    <div class="insta-user">
+                        <img src="/cbe_adoption_circle.png" class="insta-avatar-img" alt="User Avatar">
+                        <div class="insta-user-info">
+                            <span class="insta-username">coimbatore_pet_adoption</span>
+                            <span class="insta-location" *ngIf="postForm.value.city">{{ postForm.value.city }}, Tamil
+                                Nadu</span>
+                        </div>
+                    </div>
+                    <i class="material-icons">more_horiz</i>
+                </div>
+
+                <div class="insta-media" *ngIf="previewUrls.length > 0">
+                    <div class="carousel-container">
+                        <button class="nav-btn prev" *ngIf="previewUrls.length > 1" (click)="prevMedia()">
+                            <i class="material-icons">chevron_left</i>
+                        </button>
+
+                        <img [src]="previewUrls[currentPreviewIndex]"
+                            *ngIf="!previewUrls[currentPreviewIndex].includes('video/mp4') && !previewUrls[currentPreviewIndex].includes('data:video')"
+                            alt="Preview">
+                        <video [src]="previewUrls[currentPreviewIndex]"
+                            *ngIf="previewUrls[currentPreviewIndex].includes('video/mp4') || previewUrls[currentPreviewIndex].includes('data:video')"
+                            controls autoplay muted></video>
+
+                        <button class="nav-btn next" *ngIf="previewUrls.length > 1" (click)="nextMedia()">
+                            <i class="material-icons">chevron_right</i>
+                        </button>
+
+                        <div class="carousel-dots" *ngIf="previewUrls.length > 1">
+                            <span *ngFor="let p of previewUrls; let i = index"
+                                [class.active]="i === currentPreviewIndex"></span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="insta-caption-area">
+                    <div class="insta-caption-content">
+                        <strong>coimbatore_pet_adoption</strong>
+                        <pre class="formatted-caption">{{ generatedFullCaption }}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <p class="warning-text">
+                    <i class="material-icons">warning</i>
+                    Details cannot be changed after upload.
+                </p>
+                <div class="modal-buttons">
+                    <button class="cancel-btn" (click)="closeModal()">Edit</button>
+                    <button class="confirm-btn" (click)="confirmUpload()">Confirm & Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
