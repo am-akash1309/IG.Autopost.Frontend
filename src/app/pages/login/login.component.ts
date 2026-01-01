@@ -46,23 +46,27 @@ export class LoginComponent {
     openMagicLink(event: MouseEvent) {
         event.preventDefault();
         const username = 'coimbatore_pet_adoption';
-        const appUrl = `instagram://user?username=${username}`;
-        const webUrl = `https://www.instagram.com/${username}/`;
+        const webUrl = `https://ig.me/m/${username}`;
 
-        // Detection for mobile/tablet
-        const isMobileOrTablet = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile/i.test(navigator.userAgent);
+        const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+        const isAndroid = /android/i.test(userAgent);
+        const isIos = /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream;
 
-        if (isMobileOrTablet) {
-            // Using window.location.href instead of window.open often triggers App Links/Universal Links better on mobile
-            // It allows the OS to intercept the URL and open the registered app.
-            window.location.href = appUrl;
+        if (isAndroid) {
+            // Android Intent - Most reliable for Chrome/Samsung Internet to force app opening
+            // This specifically targets the Instagram package
+            const intentUrl = `intent://ig.me/m/${username}#Intent;package=com.instagram.android;scheme=https;end`;
+            window.location.href = intentUrl;
 
-            // Fallback to web if the app doesn't open within a short time
+            // Fallback for cases where intent might fail after a short delay
             setTimeout(() => {
-                window.open(webUrl, '_blank');
+                window.location.href = webUrl;
             }, 500);
+        } else if (isIos) {
+            // iOS handles https://ig.me/m/ well as a Universal Link
+            window.location.href = webUrl;
         } else {
-            // On desktop, opening in a new tab is preferred
+            // Desktop
             window.open(webUrl, '_blank');
         }
     }
