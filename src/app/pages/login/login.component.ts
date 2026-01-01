@@ -46,15 +46,21 @@ export class LoginComponent {
     openMagicLink(event: MouseEvent) {
         event.preventDefault();
         const username = 'coimbatore_pet_adoption';
-        const webUrl = `https://ig.me/m/${username}`;
+        const appUrl = `instagram://user?username=${username}`;
+        const webUrl = `https://www.instagram.com/${username}/`;
 
         // Detection for mobile/tablet
-        const isMobileOrTablet = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isMobileOrTablet = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile/i.test(navigator.userAgent);
 
         if (isMobileOrTablet) {
             // Using window.location.href instead of window.open often triggers App Links/Universal Links better on mobile
             // It allows the OS to intercept the URL and open the registered app.
-            window.location.href = webUrl;
+            window.location.href = appUrl;
+
+            // Fallback to web if the app doesn't open within a short time
+            setTimeout(() => {
+                window.open(webUrl, '_blank');
+            }, 500);
         } else {
             // On desktop, opening in a new tab is preferred
             window.open(webUrl, '_blank');
