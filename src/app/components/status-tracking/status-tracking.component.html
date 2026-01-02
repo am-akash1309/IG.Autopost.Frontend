@@ -1,0 +1,47 @@
+<div class="status-tracking-card" [class.failed]="status?.currentStep === 'Failed'" (click)="onCardClick()">
+    <div class="status-header">
+        <div class="header-info">
+            <h3>Post Status</h3>
+            <p *ngIf="status?.currentStep !== 'Done' && status?.currentStep !== 'Failed'">Processing your request...</p>
+            <p *ngIf="status?.currentStep === 'Done'" class="success-text">Success! Your post is uploaded.</p>
+            <p *ngIf="status?.currentStep === 'Failed'" class="error-text">{{ status?.error || 'Processing encountered
+                an error.' }}</p>
+        </div>
+        <button class="close-btn" (click)="onClose($event)" *ngIf="status?.isComplete">
+            <i class="material-icons">close</i>
+        </button>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="status?.progress"></div>
+        </div>
+        <span class="progress-percentage">{{ status?.progress }}%</span>
+    </div>
+
+    <div class="steps-list">
+        <div class="step-item" *ngFor="let step of displayedSteps" [class.active]="isStepActive(step.label)"
+            [class.current]="isStepCurrent(step.label)" [class.rejected]="isStepFailed(step.label)">
+            <div class="step-icon">
+                <i class="material-icons"
+                    *ngIf="isStepActive(step.label) && !isStepCurrent(step.label) && !isStepFailed(step.label)">check_circle</i>
+                <i class="material-icons" *ngIf="isStepFailed(step.label)">cancel</i>
+                <div class="spinner" *ngIf="isStepCurrent(step.label) && step.label !== 'Done'"></div>
+                <i class="material-icons"
+                    *ngIf="!isStepActive(step.label) && !isStepCurrent(step.label) && !isStepFailed(step.label)">{{
+                    step.icon }}</i>
+                <i class="material-icons" *ngIf="isStepCurrent(step.label) && step.label === 'Done'">stars</i>
+            </div>
+            <div class="step-content">
+                <span class="step-label">{{ step.label }}</span>
+                <span class="step-message" *ngIf="status?.stepMessages?.[step.label]">
+                    {{ status?.stepMessages?.[step.label] }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="retry-action" *ngIf="status?.currentStep === 'Failed' && showDismiss">
+        <button class="retry-btn" (click)="onClose($event)">Dismiss</button>
+    </div>
+</div>

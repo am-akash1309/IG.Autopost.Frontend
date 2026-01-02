@@ -52,6 +52,7 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: -0.02em;
+    margin-top: 0 !important;
 }
 
 .page-subtitle {
@@ -199,6 +200,7 @@ input:focus {
     color: #1e293b;
     margin-bottom: 24px;
     font-family: 'Outfit', sans-serif;
+    margin-top: 0 !important;
 }
 
 .policy-block {

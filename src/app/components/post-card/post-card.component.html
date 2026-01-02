@@ -1,0 +1,23 @@
+<div class="post-card">
+    <div class="card-media">
+        <img [src]="post.file_urls[0]" alt="Post Media"
+            *ngIf="post.file_urls && post.file_urls.length > 0 && isImage(post.file_urls[0])">
+        <video [src]="post.file_urls[0]"
+            *ngIf="post.file_urls && post.file_urls.length > 0 && !isImage(post.file_urls[0])" controls></video>
+        <div class="placeholder-media" *ngIf="!post.file_urls || post.file_urls.length === 0">
+            <i class="material-icons">image_not_supported</i>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="body-header">
+            <h3 class="card-type">{{ post.type | uppercase }}</h3>
+            <span class="card-date">{{ post.created_at | date }}</span>
+        </div>
+        <p class="card-caption line-clamp">{{ post.caption }}</p>
+        <div class="card-footer">
+            <span [class]="'status-badge ' + getStatusClass(post)">
+                {{ getStatusLabel(post) }}
+            </span>
+        </div>
+    </div>
+</div>

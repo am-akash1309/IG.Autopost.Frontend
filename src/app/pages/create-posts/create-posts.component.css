@@ -307,6 +307,7 @@ textarea:focus {
 .instagram-toggle {
     margin-top: 12px;
     padding: 0 !important;
+    padding-left: 6px !important;
     background: none !important;
     border: none !important;
 }

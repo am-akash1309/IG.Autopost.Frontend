@@ -1,21 +1,36 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { PostCardComponent } from '../../components/post-card/post-card.component';
+import { PostStatusService } from '../../services/post-status.service';
+import { UploadStatus } from '../../interfaces/post-status.interface';
+import { StatusTrackingComponent } from '../../components/status-tracking/status-tracking.component';
+
 
 @Component({
     selector: 'app-dashboard',
     standalone: true,
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, PostCardComponent, StatusTrackingComponent],
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
+    private postStatusService = inject(PostStatusService);
     user: any;
+
     posts: any[] = [];
     isLoading = true;
+    uploadStatus: UploadStatus | null = null;
+    selectedPostStatus: UploadStatus | null = null;
 
-    constructor(private apiService: ApiService, private router: Router) { }
+    constructor(
+        private apiService: ApiService,
+        private router: Router
+    ) { }
+
+
 
     ngOnInit(): void {
         if (!this.apiService.isLoggedIn()) {
@@ -24,10 +39,19 @@ export class DashboardComponent implements OnInit {
         }
         this.user = this.apiService.getUser();
         this.fetchPosts();
+
+        this.postStatusService.uploadStatus$.subscribe(status => {
+            this.uploadStatus = status;
+        });
+
+        this.postStatusService.selectedPostStatus$.subscribe(status => {
+            this.selectedPostStatus = status;
+        });
     }
 
-    fetchPosts(): void {
-        this.isLoading = true;
+
+    fetchPosts(silent: boolean = false): void {
+        if (!silent) this.isLoading = true;
         this.apiService.getUserPosts().subscribe({
             next: (response) => {
                 this.posts = response.posts || [];
@@ -45,24 +69,18 @@ export class DashboardComponent implements OnInit {
         this.router.navigate(['/login']);
     }
 
-    getStatusClass(post: any): string {
-        if (post.is_published) return 'status-published';
-        if (post.needs_manual_review) return 'status-review';
-        if (post.is_ai_approved) return 'status-approved';
-        return 'status-pending';
+    onPostClick(post: any) {
+        this.postStatusService.trackExistingPost(post);
     }
 
-    getStatusLabel(post: any): string {
-        if (post.is_published) return 'Published';
-        if (post.needs_manual_review) return 'Needs Manual Review';
-        if (post.is_ai_approved) return 'AI Approved';
-        return 'Under Review';
+    clearSelectedStatus() {
+        this.postStatusService.clearSelectedPost();
+        this.fetchPosts(true); // Silent refresh to catch any background updates
     }
 
-    isImage(url: string): boolean {
-        if (!url) return false;
-        const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        const extension = url.split('.').pop()?.toLowerCase() || '';
-        return imageExtensions.includes(extension) || url.startsWith('data:image');
+    clearUploadStatus() {
+        this.postStatusService.clearUpload();
+        this.fetchPosts(true); // Silent refresh to show the new post card
     }
 }
+

@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { HostListener } from '@angular/core';
 import { ApiService } from '../../services/api.service';
+import { PostStatusService } from '../../services/post-status.service';
+
 
 @Component({
     selector: 'app-create-posts',
@@ -13,7 +16,9 @@ import { ApiService } from '../../services/api.service';
     styleUrls: ['./create-posts.component.css']
 })
 export class CreatePostsComponent {
+    private postStatusService = inject(PostStatusService);
     postForm: FormGroup;
+
     selectedFiles: File[] = [];
     previewUrls: string[] = [];
     isUploading = false;
@@ -29,7 +34,7 @@ export class CreatePostsComponent {
         'Dharmapuri', 'Dindigul', 'Erode', 'Kallakurichi', 'Kanchipuram',
         'Kanyakumari', 'Karur', 'Krishnagiri', 'Madurai', 'Mayiladuthurai',
         'Nagapattinam', 'Namakkal', 'Nilgiris', 'Perambalur', 'Pudukkottai',
-        'Ramanathapuram', 'Ranipet', 'Salem', 'Sivaganga', 'Tenkasi',
+        'Ramanathapuram', 'Ranipet', 'Salem', 'Sivagangai', 'Tenkasi',
         'Thanjavur', 'Theni', 'Thoothukudi', 'Tiruchirappalli', 'Tirunelveli',
         'Tirupathur', 'Tiruppur', 'Tiruvallur', 'Tiruvannamalai', 'Tiruvarur',
         'Vellore', 'Viluppuram', 'Virudhunagar'
@@ -164,9 +169,6 @@ export class CreatePostsComponent {
     }
 
     confirmUpload() {
-        this.isUploading = true;
-        this.showModal = false;
-
         const formData = new FormData();
         this.selectedFiles.forEach(file => {
             formData.append('files', file);
@@ -176,19 +178,9 @@ export class CreatePostsComponent {
         formData.append('location', `${this.postForm.value.city}, Tamil Nadu`);
         formData.append('type', this.postForm.value.type);
 
-        this.apiService.uploadMedia(formData).subscribe({
-            next: (res) => {
-                this.isUploading = false;
-                this.uploadResponse = res;
-                alert('Post uploaded successfully for review!');
-                this.router.navigate(['/dashboard']);
-            },
-            error: (err) => {
-                this.isUploading = false;
-                console.error('Upload failed', err);
-                alert('Upload failed: ' + (err.error?.error || 'Unknown error'));
-            }
-        });
+        this.postStatusService.startUpload(formData);
+        this.showModal = false;
+        this.router.navigate(['/dashboard']);
     }
 
     closeModal() {

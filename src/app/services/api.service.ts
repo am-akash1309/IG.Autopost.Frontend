@@ -93,4 +93,13 @@ export class ApiService {
     getUserPosts(): Observable<any> {
         return this.http.get(`${this.BASE_URL}/media/posts`);
     }
+
+    verifyAi(postId: string): Observable<any> {
+        return this.http.post(`${this.BASE_URL}/media/verify-ai/${postId}`, {});
+    }
+
+    publishPost(postId: string): Observable<any> {
+        return this.http.post(`${this.BASE_URL}/media/publish/${postId}`, {});
+    }
 }
+

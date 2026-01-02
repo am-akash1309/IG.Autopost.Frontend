@@ -1,0 +1,213 @@
+.status-tracking-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.status-tracking-card.failed {
+    border-left: 4px solid #ff4d4d;
+}
+
+.status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.header-info h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #1a1a1a;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.header-info p {
+    margin: 4px 0 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.success-text {
+    color: #00c853 !important;
+    font-weight: 500;
+}
+
+.error-text {
+    color: #ff4d4d !important;
+    font-weight: 500;
+}
+
+.close-btn {
+    background: #f5f5f7;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.close-btn:hover {
+    background: #e5e5e7;
+    color: #1a1a1a;
+}
+
+.progress-container {
+    margin-bottom: 32px;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #f0f0f2;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00c853, #00e676);
+    border-radius: 4px;
+    transition: width 0.5s ease-out;
+}
+
+.progress-percentage {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    display: block;
+    text-align: right;
+}
+
+.steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    opacity: 0.4;
+    transition: all 0.3s;
+}
+
+.step-item.active {
+    opacity: 1;
+}
+
+.step-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+}
+
+.step-icon i {
+    font-size: 20px;
+}
+
+.step-item.active .step-icon i {
+    color: #00c853;
+}
+
+.step-item.current .step-icon i {
+    color: #2196f3;
+}
+
+.step-item.rejected {
+    opacity: 1;
+}
+
+.step-item.rejected .step-icon i {
+    color: #ff4d4d;
+}
+
+.step-item.rejected .step-label {
+    color: #ff4d4d;
+    font-weight: 600;
+}
+
+.step-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.step-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.step-message {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 2px;
+}
+
+.step-item.current .step-label {
+    color: #1a1a1a;
+    font-weight: 600;
+}
+
+.spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(33, 150, 243, 0.1);
+    border-top: 2px solid #2196f3;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.retry-action {
+    margin-top: 24px;
+}
+
+.retry-btn {
+    width: 100%;
+    padding: 12px;
+    background: #1a1a1a;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.retry-btn:hover {
+    transform: translateY(-2px);
+    background: #333;
+}
+
+@media (max-width: 480px) {
+    .status-tracking-card {
+        padding: 20px;
+    }
+}
