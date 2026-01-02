@@ -82,7 +82,7 @@ export class CreatePostsComponent {
 
         let hashtags = '';
         if (action === 'adoption') {
-            hashtags = `#${city} #cbe\n#pet #pets\n#petsforadoption #petforadoption\n#petsforadoptionin${city}\n`;
+            hashtags = `#${city}\n#coimbatore #cbe\n#pet #pets\n#petsforadoption #petforadoption\n#petsforadoptionin${city}\n`;
             if (category === 'cat') {
                 hashtags += `#kitty #kitten #kittens #cat #cats\n#kittenforadoption #kittensforadoption\n#kittensforadoptionin${city}\n#catforadoption #catsforadoption\n#catsforadoptionin${city}`;
             } else {
@@ -90,7 +90,7 @@ export class CreatePostsComponent {
             }
         } else {
             // Missing pet logic - no "for"
-            hashtags = `#${city} #cbe\n#pet #pets\n#petsmissing #petmissing\n#petsmissingin${city}\n`;
+            hashtags = `#${city}\n#coimbatore #cbe\n#pet #pets\n#petsmissing #petmissing\n#petsmissingin${city}\n`;
             if (category === 'cat') {
                 hashtags += `#kitty #kitten #kittens #cat #cats\n#missingcat #missingkitten\n#missingkittensin${city}\n#catmissing #kittenmissing\n#catmissingin${city}`;
             } else {
