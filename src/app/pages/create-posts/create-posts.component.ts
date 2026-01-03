@@ -82,7 +82,7 @@ export class CreatePostsComponent {
 
         let hashtags = '';
         if (action === 'adoption') {
-            hashtags = `#${city}\n#coimbatore #cbe\n#pet #pets\n#petsforadoption #petforadoption\n#petsforadoptionin${city}\n`;
+            hashtags = `#${city} #cbe\n#pet #pets\n#petsforadoption #petforadoption\n#petsforadoptionin${city}\n`;
             if (category === 'cat') {
                 hashtags += `#kitty #kitten #kittens #cat #cats\n#kittenforadoption #kittensforadoption\n#kittensforadoptionin${city}\n#catforadoption #catsforadoption\n#catsforadoptionin${city}`;
             } else {
@@ -90,7 +90,7 @@ export class CreatePostsComponent {
             }
         } else {
             // Missing pet logic - no "for"
-            hashtags = `#${city}\n#coimbatore #cbe\n#pet #pets\n#petsmissing #petmissing\n#petsmissingin${city}\n`;
+            hashtags = `#${city} #cbe\n#pet #pets\n#petsmissing #petmissing\n#petsmissingin${city}\n`;
             if (category === 'cat') {
                 hashtags += `#kitty #kitten #kittens #cat #cats\n#missingcat #missingkitten\n#missingkittensin${city}\n#catmissing #kittenmissing\n#catmissingin${city}`;
             } else {
@@ -104,8 +104,23 @@ export class CreatePostsComponent {
     onFileSelected(event: any) {
         const files = event.target.files;
         if (files) {
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
+            const remainingSlots = 6 - this.selectedFiles.length;
+            if (remainingSlots <= 0) {
+                alert('Maximum 6 images allowed.');
+                return;
+            }
+
+            const filesToProcess = Array.from(files).slice(0, remainingSlots);
+
+            for (let i = 0; i < filesToProcess.length; i++) {
+                const file = filesToProcess[i] as File;
+
+                // Reject if not an image
+                if (!file.type.startsWith('image/')) {
+                    alert('Only images are allowed for now.');
+                    continue;
+                }
+
                 this.selectedFiles.push(file);
                 const reader = new FileReader();
                 reader.onload = (e: any) => {
@@ -114,6 +129,79 @@ export class CreatePostsComponent {
                 reader.readAsDataURL(file);
             }
         }
+    }
+
+    moveFile(index: number, direction: 'up' | 'down') {
+        const newIndex = direction === 'up' ? index - 1 : index + 1;
+        if (newIndex < 0 || newIndex >= this.selectedFiles.length) return;
+        this.reorderItems(index, newIndex);
+    }
+
+    private reorderItems(fromIndex: number, toIndex: number) {
+        if (fromIndex === toIndex) return;
+
+        // Move selectedFile
+        const [file] = this.selectedFiles.splice(fromIndex, 1);
+        this.selectedFiles.splice(toIndex, 0, file);
+
+        // Move previewUrl
+        const [url] = this.previewUrls.splice(fromIndex, 1);
+        this.previewUrls.splice(toIndex, 0, url);
+    }
+
+    draggedIndex: number | null = null;
+
+    onDragStart(index: number) {
+        this.draggedIndex = index;
+    }
+
+    onDragOver(event: DragEvent, index: number) {
+        event.preventDefault();
+        if (this.draggedIndex === null || this.draggedIndex === index) return;
+    }
+
+    onDrop(event: DragEvent, index: number) {
+        event.preventDefault();
+        if (this.draggedIndex !== null && this.draggedIndex !== index) {
+            this.reorderItems(this.draggedIndex, index);
+        }
+        this.draggedIndex = null;
+    }
+
+    // Touch Support for Mobile Drag and Drop
+    touchStartIndex: number | null = null;
+    touchLastX = 0;
+    touchLastY = 0;
+
+    onTouchStart(index: number, event: TouchEvent) {
+        this.touchStartIndex = index;
+        this.touchLastX = event.touches[0].clientX;
+        this.touchLastY = event.touches[0].clientY;
+    }
+
+    onTouchMove(event: TouchEvent) {
+        if (this.touchStartIndex === null) return;
+        event.preventDefault(); // Prevent scrolling
+
+        // Find element under touch
+        const touch = event.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        const previewItem = element?.closest('.preview-item');
+
+        if (previewItem) {
+            const indexAttr = previewItem.getAttribute('data-index');
+            if (indexAttr !== null) {
+                const targetIndex = parseInt(indexAttr, 10);
+                if (targetIndex !== this.touchStartIndex) {
+                    this.reorderItems(this.touchStartIndex, targetIndex);
+                    this.touchStartIndex = targetIndex; // Update start index to current position
+                }
+            }
+        }
+    }
+
+    onTouchEnd() {
+        this.touchStartIndex = null;
     }
 
     removeFile(index: number) {
@@ -125,7 +213,7 @@ export class CreatePostsComponent {
         if (this.postForm.invalid || this.selectedFiles.length === 0) {
             this.postForm.markAllAsTouched();
             if (this.selectedFiles.length === 0) {
-                alert('Please upload at least one photo or video first.');
+                alert('Please upload at least one photo first.');
             }
             return;
         }

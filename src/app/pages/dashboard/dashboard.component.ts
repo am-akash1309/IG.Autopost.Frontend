@@ -7,6 +7,7 @@ import { PostCardComponent } from '../../components/post-card/post-card.componen
 import { PostStatusService } from '../../services/post-status.service';
 import { UploadStatus } from '../../interfaces/post-status.interface';
 import { StatusTrackingComponent } from '../../components/status-tracking/status-tracking.component';
+import { ToastService } from '../../services/toast.service';
 
 
 @Component({
@@ -18,12 +19,14 @@ import { StatusTrackingComponent } from '../../components/status-tracking/status
 })
 export class DashboardComponent implements OnInit {
     private postStatusService = inject(PostStatusService);
+    private toastService = inject(ToastService);
     user: any;
 
     posts: any[] = [];
     isLoading = true;
     uploadStatus: UploadStatus | null = null;
     selectedPostStatus: UploadStatus | null = null;
+    isCheckingStatus = false;
 
     constructor(
         private apiService: ApiService,
@@ -81,6 +84,29 @@ export class DashboardComponent implements OnInit {
     clearUploadStatus() {
         this.postStatusService.clearUpload();
         this.fetchPosts(true); // Silent refresh to show the new post card
+    }
+
+    onCreatePostClick(event: Event) {
+        event.preventDefault();
+        if (this.isCheckingStatus) return;
+
+        this.isCheckingStatus = true;
+        this.apiService.checkPostStatus().subscribe({
+            next: (response) => {
+                this.isCheckingStatus = false;
+                if (response.can_post) {
+                    this.router.navigate(['/create_posts']);
+                } else {
+                    this.toastService.error(response.error || 'You cannot create a post at this time.');
+                }
+            },
+            error: (err) => {
+                this.isCheckingStatus = false;
+                const message = err.error?.error || 'An error occurred while checking your status.';
+                this.toastService.error(message);
+                console.error('Status check error:', err);
+            }
+        });
     }
 }
 

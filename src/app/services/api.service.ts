@@ -101,5 +101,9 @@ export class ApiService {
     publishPost(postId: string): Observable<any> {
         return this.http.post(`${this.BASE_URL}/media/publish/${postId}`, {});
     }
+
+    checkPostStatus(): Observable<any> {
+        return this.http.get(`${this.BASE_URL}/media/check-status`);
+    }
 }
 

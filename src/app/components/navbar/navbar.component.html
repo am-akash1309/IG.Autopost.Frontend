@@ -24,9 +24,6 @@
             <a *ngIf="isLoggedIn" routerLink="/dashboard" routerLinkActive="active" class="nav-item"
                 (click)="closeMenu()">Dashboard</a>
 
-            <a *ngIf="isLoggedIn" routerLink="/create_posts" routerLinkActive="active" class="nav-item"
-                (click)="closeMenu()">Create Post</a>
-
             <!-- User Auth Section -->
             <div class="user-section" *ngIf="isLoggedIn; else loginTemplate">
                 <div class="user-pill">

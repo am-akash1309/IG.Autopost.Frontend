@@ -46,29 +46,43 @@
 
             <!-- Media Upload Area -->
             <div class="upload-section">
-                <label for="fileInput" class="upload-label">
-                    <div class="upload-placeholder" *ngIf="previewUrls.length === 0">
+                <div class="upload-container">
+                    <div class="upload-placeholder" *ngIf="previewUrls.length === 0" (click)="fileInput.click()"
+                        style="cursor: pointer;">
                         <i class="material-icons">cloud_upload</i>
-                        <span>Click to upload photos or videos</span>
-                        <p class="upload-hint">Up to 10 files (JPG, PNG, MP4)</p>
+                        <span>Click to upload photos</span>
+                        <p class="upload-hint">Up to 6 images (JPG, PNG)</p>
                     </div>
 
                     <div class="preview-grid" *ngIf="previewUrls.length > 0">
-                        <div class="preview-item" *ngFor="let url of previewUrls; let i = index">
-                            <img [src]="url" *ngIf="!url.includes('video/mp4') && !url.includes('data:video')"
-                                alt="Preview">
-                            <video [src]="url" *ngIf="url.includes('video/mp4') || url.includes('data:video')"></video>
-                            <button type="button" class="remove-btn" (click)="removeFile(i)">
-                                <i class="material-icons">close</i>
-                            </button>
+                        <div class="preview-item" *ngFor="let url of previewUrls; let i = index" draggable="true"
+                            [attr.data-index]="i" [class.dragging]="draggedIndex === i || touchStartIndex === i"
+                            (dragstart)="onDragStart(i)" (dragover)="onDragOver($event, i)" (drop)="onDrop($event, i)"
+                            (touchstart)="onTouchStart(i, $event)" (touchmove)="onTouchMove($event)"
+                            (touchend)="onTouchEnd()">
+                            <img [src]="url" alt="Preview">
+                            <div class="preview-overlay">
+                                <div class="drag-handle">
+                                    <i class="material-icons">drag_indicator</i>
+                                </div>
+                                <button type="button" class="remove-btn"
+                                    (click)="$event.stopPropagation(); removeFile(i)">
+                                    <i class="material-icons">close</i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="add-more-item" (click)="fileInput.click()">
+                        <div class="add-more-item" (click)="previewUrls.length < 6 && fileInput.click()"
+                            *ngIf="previewUrls.length < 6">
                             <i class="material-icons">add</i>
                         </div>
                     </div>
-                </label>
-                <input #fileInput id="fileInput" type="file" multiple (change)="onFileSelected($event)"
-                    accept="image/*,video/*" style="display: none;">
+                    <div class="drag-prompt" *ngIf="previewUrls.length > 1">
+                        <i class="material-icons">info</i>
+                        <span>Drag to rearrange</span>
+                    </div>
+                </div>
+                <input #fileInput id="fileInput" type="file" multiple (change)="onFileSelected($event)" accept="image/*"
+                    style="display: none;">
             </div>
 
             <!-- Contact & Format Section -->
@@ -95,8 +109,8 @@
                         <div class="select-options" *ngIf="activeDropdown === 'type'">
                             <div class="option" [class.selected]="postForm.value.type === 'post'"
                                 (click)="selectOption('type', 'post')">Post</div>
-                            <div class="option disabled">Reel (Soon)</div>
-                            <div class="option disabled">Story (Soon)</div>
+                            <div class="option disabled">Reel (Coming Soon)</div>
+                            <div class="option disabled">Story (Coming Soon)</div>
                         </div>
                     </div>
                 </div>
@@ -185,12 +199,7 @@
                             <i class="material-icons">chevron_left</i>
                         </button>
 
-                        <img [src]="previewUrls[currentPreviewIndex]"
-                            *ngIf="!previewUrls[currentPreviewIndex].includes('video/mp4') && !previewUrls[currentPreviewIndex].includes('data:video')"
-                            alt="Preview">
-                        <video [src]="previewUrls[currentPreviewIndex]"
-                            *ngIf="previewUrls[currentPreviewIndex].includes('video/mp4') || previewUrls[currentPreviewIndex].includes('data:video')"
-                            controls autoplay muted></video>
+                        <img [src]="previewUrls[currentPreviewIndex]" alt="Preview">
 
                         <button class="nav-btn next" *ngIf="previewUrls.length > 1" (click)="nextMedia()">
                             <i class="material-icons">chevron_right</i>

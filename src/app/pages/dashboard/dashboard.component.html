@@ -1,8 +1,10 @@
 <div class="dashboard-container">
     <header class="dashboard-header">
         <div></div> <!-- Spacer for flexbox if needed, or just remove flex-between -->
-        <a routerLink="/create_posts" class="create-post-btn-green">
-            <i class="material-icons">add</i>
+        <a (click)="onCreatePostClick($event)" class="create-post-btn-green" style="cursor: pointer;"
+            [class.disabled]="isCheckingStatus">
+            <i class="material-icons" *ngIf="!isCheckingStatus">add</i>
+            <span class="btn-loader" *ngIf="isCheckingStatus"></span>
             <span>Create Post</span>
         </a>
     </header>

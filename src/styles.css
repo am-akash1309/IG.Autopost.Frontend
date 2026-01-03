@@ -5,3 +5,25 @@ html {
 }
 
 /* You can add global styles to this file, and also import other style files */
+
+.btn-loader {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-bottom-color: #ffffff;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: btn-rotation 1s linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes btn-rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
