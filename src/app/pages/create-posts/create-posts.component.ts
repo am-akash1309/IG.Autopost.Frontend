@@ -246,11 +246,16 @@ export class CreatePostsComponent {
     private reorderItems(fromIndex: number, toIndex: number) {
         if (fromIndex === toIndex) return;
 
-        // Move originalFile
-        const [file] = this.originalFiles.splice(fromIndex, 1);
-        this.originalFiles.splice(toIndex, 0, file);
+        // Move source file
+        const [oFile] = this.originalFiles.splice(fromIndex, 1);
+        this.originalFiles.splice(toIndex, 0, oFile);
 
-        this.processImages();
+        // Move already processed file & preview url to avoid re-calculating everything
+        const [sFile] = this.selectedFiles.splice(fromIndex, 1);
+        this.selectedFiles.splice(toIndex, 0, sFile);
+
+        const [url] = this.previewUrls.splice(fromIndex, 1);
+        this.previewUrls.splice(toIndex, 0, url);
     }
 
     draggedIndex: number | null = null;
