@@ -7,6 +7,10 @@
         <div class="placeholder-media" *ngIf="!post.file_urls || post.file_urls.length === 0">
             <i class="material-icons">image_not_supported</i>
         </div>
+        <div class="media-count-badge" *ngIf="post.file_urls && post.file_urls.length > 1">
+            <i class="material-icons">collections</i>
+            <span>+{{ post.file_urls.length - 1 }} more</span>
+        </div>
     </div>
     <div class="card-body">
         <div class="body-header">

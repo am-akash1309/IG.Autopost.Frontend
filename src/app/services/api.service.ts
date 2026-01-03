@@ -7,6 +7,7 @@ import { Observable, BehaviorSubject, tap } from 'rxjs';
 })
 export class ApiService {
     private readonly BASE_URL = 'https://pet-adoption-api-6y2a.onrender.com/igautopostapi';
+    // private readonly BASE_URL = 'http://localhost:5000/igautopostapi';
     private readonly TOKEN_KEY = 'auth_token';
     private readonly USER_KEY = 'auth_user';
 
@@ -74,6 +75,15 @@ export class ApiService {
         return null;
     }
 
+    getUserRole(): string | null {
+        const user = this.getUser();
+        return user ? user.role : null;
+    }
+
+    isAdmin(): boolean {
+        return this.getUserRole() === 'admin';
+    }
+
     logout(): void {
         if (typeof window !== 'undefined') {
             localStorage.removeItem(this.TOKEN_KEY);
@@ -104,6 +114,22 @@ export class ApiService {
 
     checkPostStatus(): Observable<any> {
         return this.http.get(`${this.BASE_URL}/media/check-status`);
+    }
+
+    getAdminStats(): Observable<any> {
+        return this.http.get(`${this.BASE_URL}/admin/stats`);
+    }
+
+    getDailyStats(page: number = 1, limit: number = 10): Observable<any> {
+        return this.http.get(`${this.BASE_URL}/admin/daily-stats?page=${page}&limit=${limit}`);
+    }
+
+    getPendingReviewPosts(): Observable<any> {
+        return this.http.get(`${this.BASE_URL}/admin/pending-review`);
+    }
+
+    reviewPost(postId: string, isApproved: boolean): Observable<any> {
+        return this.http.post(`${this.BASE_URL}/admin/review-post/${postId}`, { is_approved: isApproved });
     }
 }
 

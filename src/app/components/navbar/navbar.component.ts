@@ -12,6 +12,7 @@ import { ApiService } from '../../services/api.service';
 })
 export class NavbarComponent implements OnInit {
     isLoggedIn: boolean = false;
+    isAdmin: boolean = false;
     user: any = null;
     isMenuOpen: boolean = false;
 
@@ -22,8 +23,10 @@ export class NavbarComponent implements OnInit {
             this.isLoggedIn = status;
             if (status) {
                 this.user = this.apiService.getUser();
+                this.isAdmin = this.apiService.isAdmin();
             } else {
                 this.user = null;
+                this.isAdmin = false;
             }
         });
     }

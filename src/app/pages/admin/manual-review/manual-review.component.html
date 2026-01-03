@@ -1,0 +1,94 @@
+<div class="review-page">
+    <div class="background-decor"></div>
+
+    <div class="container">
+        <header class="header">
+            <div class="title-section">
+                <span class="badge">Moderation Queue</span>
+                <h1>Manual Review</h1>
+                <p>Evaluate posts flagged for system verification</p>
+            </div>
+        </header>
+
+        <div *ngIf="loading" class="loader-container">
+            <div class="pulse-loader"></div>
+            <p>Loading pending reviews...</p>
+        </div>
+
+        <div *ngIf="!loading && posts.length === 0" class="empty-state">
+            <div class="empty-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+            <h3>All clear!</h3>
+            <p>There are no posts requiring manual review at this time.</p>
+        </div>
+
+        <div *ngIf="!loading && posts.length > 0" class="posts-grid">
+            <div class="post-card" *ngFor="let post of posts">
+                <div class="media-preview">
+                    <div class="carousel-container">
+                        <img [src]="post.file_urls[post.currentMediaIndex || 0]" alt="Post Preview">
+
+                        <div class="carousel-nav" *ngIf="post.file_urls.length > 1">
+                            <button class="nav-prev" (click)="prevImage($event, post)"
+                                [disabled]="(post.currentMediaIndex || 0) === 0">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                    <polyline points="15 18 9 12 15 6"></polyline>
+                                </svg>
+                            </button>
+                            <button class="nav-next" (click)="nextImage($event, post)"
+                                [disabled]="(post.currentMediaIndex || 0) === post.file_urls.length - 1">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="carousel-dots" *ngIf="post.file_urls.length > 1">
+                            <span *ngFor="let url of post.file_urls; let i = index"
+                                [class.active]="i === (post.currentMediaIndex || 0)"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="post-content">
+                    <div class="post-header">
+                        <span class="username">&#64;{{ post.username }}</span>
+                        <span class="date">{{ post.created_at | date:'short' }}</span>
+                    </div>
+
+                    <p class="caption">{{ post.caption }}</p>
+
+                    <div class="post-footer">
+                        <div class="location" *ngIf="post.location">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            {{ post.location }}
+                        </div>
+
+                        <div class="review-actions">
+                            <button class="btn-reject" (click)="decide(post, false)" [disabled]="post.processing">
+                                Reject
+                            </button>
+                            <button class="btn-approve" (click)="decide(post, true)" [disabled]="post.processing">
+                                Approve & Publish
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mini Action Spinner Overlay -->
+                <div class="action-overlay" *ngIf="post.processing">
+                    <div class="spinner"></div>
+                    <p>{{ post.decision === true ? 'Publishing...' : 'Rejecting...' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

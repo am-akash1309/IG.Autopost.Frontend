@@ -24,6 +24,12 @@
             <a *ngIf="isLoggedIn" routerLink="/dashboard" routerLinkActive="active" class="nav-item"
                 (click)="closeMenu()">Dashboard</a>
 
+            <a *ngIf="isLoggedIn && isAdmin" routerLink="/admin" routerLinkActive="active" class="nav-item"
+                (click)="closeMenu()">Admin</a>
+
+            <a *ngIf="isLoggedIn && isAdmin" routerLink="/admin/review" routerLinkActive="active" class="nav-item"
+                (click)="closeMenu()">Manual Review</a>
+
             <!-- User Auth Section -->
             <div class="user-section" *ngIf="isLoggedIn; else loginTemplate">
                 <div class="user-pill">

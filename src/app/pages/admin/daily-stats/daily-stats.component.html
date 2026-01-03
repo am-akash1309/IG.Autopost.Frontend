@@ -1,0 +1,39 @@
+<div class="daily-stats-container">
+    <div class="header">
+        <h3>Publication History</h3>
+        <p>Daily volume of published posts</p>
+    </div>
+
+    <div *ngIf="loading" class="loader">
+        <div class="spinner"></div>
+    </div>
+
+    <div *ngIf="!loading && history.length > 0" class="history-list">
+        <div class="history-item" *ngFor="let item of history">
+            <div class="date-info">
+                <span class="calendar-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                </span>
+                <span class="date">{{ item._id | date:'mediumDate' }}</span>
+            </div>
+            <div class="count-badge">
+                {{ item.count }} posts
+            </div>
+        </div>
+    </div>
+
+    <div class="pagination" *ngIf="totalPages > 1">
+        <button [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">Previous</button>
+        <span class="page-info">Page {{currentPage}} of {{totalPages}}</span>
+        <button [disabled]="currentPage === totalPages" (click)="changePage(currentPage + 1)">Next</button>
+    </div>
+
+    <div *ngIf="!loading && history.length === 0" class="empty-state">
+        No publication records found yet.
+    </div>
+</div>

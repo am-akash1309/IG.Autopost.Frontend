@@ -127,3 +127,27 @@
     background: #f8fafc;
     color: #64748b;
 }
+
+.media-count-badge {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
+
+.media-count-badge i {
+    font-size: 14px;
+}
