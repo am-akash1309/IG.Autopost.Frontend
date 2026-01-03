@@ -55,6 +55,12 @@
                     </div>
 
                     <div class="preview-grid" *ngIf="previewUrls.length > 0">
+                        <!-- Processing Overlay -->
+                        <div class="processing-overlay" *ngIf="isProcessing">
+                            <span class="loader small"></span>
+                            <span>Optimizing...</span>
+                        </div>
+
                         <div class="preview-item" *ngFor="let url of previewUrls; let i = index" draggable="true"
                             [attr.data-index]="i" [class.dragging]="draggedIndex === i || touchStartIndex === i"
                             (dragstart)="onDragStart(i)" (dragover)="onDragOver($event, i)" (drop)="onDrop($event, i)"
@@ -76,9 +82,11 @@
                             <i class="material-icons">add</i>
                         </div>
                     </div>
-                    <div class="drag-prompt" *ngIf="previewUrls.length > 1">
+                    <div class="drag-prompt" *ngIf="previewUrls.length > 0 && !isProcessing">
                         <i class="material-icons">info</i>
-                        <span>Drag to rearrange</span>
+                        <span>{{ previewUrls.length > 1 ? 'Drag to rearrange • ' : '' }}Aspect ratio: {{
+                            selectedAspectRatio === 1.91 ? 'Landscape' :
+                            selectedAspectRatio === 0.8 ? 'Portrait' : 'Square' }}</span>
                     </div>
                 </div>
                 <input #fileInput id="fileInput" type="file" multiple (change)="onFileSelected($event)" accept="image/*"
@@ -193,13 +201,13 @@
                     </div>
                 </div>
 
-                <div class="insta-media" *ngIf="previewUrls.length > 0">
+                <div class="insta-media" *ngIf="previewUrls.length > 0" [style.aspect-ratio]="selectedAspectRatio">
                     <div class="carousel-container">
                         <button class="nav-btn prev" *ngIf="previewUrls.length > 1" (click)="prevMedia()">
                             <i class="material-icons">chevron_left</i>
                         </button>
 
-                        <img [src]="previewUrls[currentPreviewIndex]" alt="Preview">
+                        <img [src]="previewUrls[currentPreviewIndex]" alt="Preview" style="object-fit: cover;">
 
                         <button class="nav-btn next" *ngIf="previewUrls.length > 1" (click)="nextMedia()">
                             <i class="material-icons">chevron_right</i>

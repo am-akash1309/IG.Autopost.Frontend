@@ -145,6 +145,10 @@ export class PostStatusService {
                 stepMessages: stepMessages
             });
             return;
+        } else if (post.is_manual_approved === true) {
+            currentStep = PostStep.POSTING_TO_INSTAGRAM;
+            progress = 70;
+            stepMessages[PostStep.POSTING_TO_INSTAGRAM] = 'Approved by moderator! Ready to be published.';
         } else if (post.needs_manual_review) {
             currentStep = PostStep.MANUAL_REVIEW;
             progress = 50;

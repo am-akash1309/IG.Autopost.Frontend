@@ -449,6 +449,7 @@ textarea:focus {
 }
 
 .preview-grid {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     gap: 12px;
@@ -456,6 +457,32 @@ textarea:focus {
     padding: 16px;
     border-radius: 20px;
     border: 1px solid #e2e8f0;
+}
+
+.processing-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(4px);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border-radius: 20px;
+}
+
+.processing-overlay span {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6366f1;
+}
+
+.loader.small {
+    width: 24px;
+    height: 24px;
+    border-width: 2.5px;
 }
 
 .drag-prompt {
@@ -688,12 +715,13 @@ textarea:focus {
 
 .insta-media {
     width: 100%;
-    aspect-ratio: 1;
+    /* aspect-ratio set dynamically in template */
     background: #000;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 }
 
 .carousel-container {

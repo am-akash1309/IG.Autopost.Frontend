@@ -20,8 +20,11 @@ export class CreatePostsComponent {
     postForm: FormGroup;
 
     selectedFiles: File[] = [];
+    originalFiles: File[] = [];
     previewUrls: string[] = [];
+    selectedAspectRatio: number = 1;
     isUploading = false;
+    isProcessing = false;
     showModal = false;
     uploadResponse: any = null;
     currentPreviewIndex = 0;
@@ -101,33 +104,136 @@ export class CreatePostsComponent {
         this.dynamicHashtags = hashtags;
     }
 
-    onFileSelected(event: any) {
+    async onFileSelected(event: any) {
         const files = event.target.files;
         if (files) {
-            const remainingSlots = 6 - this.selectedFiles.length;
+            const remainingSlots = 6 - this.originalFiles.length;
             if (remainingSlots <= 0) {
                 alert('Maximum 6 images allowed.');
                 return;
             }
 
-            const filesToProcess = Array.from(files).slice(0, remainingSlots);
+            const filesToProcess = Array.from(files).slice(0, remainingSlots) as File[];
 
-            for (let i = 0; i < filesToProcess.length; i++) {
-                const file = filesToProcess[i] as File;
-
-                // Reject if not an image
+            // Filter for images only
+            const validFiles = filesToProcess.filter(file => {
                 if (!file.type.startsWith('image/')) {
-                    alert('Only images are allowed for now.');
-                    continue;
+                    alert(`${file.name} is not an image.`);
+                    return false;
+                }
+                return true;
+            });
+
+            this.originalFiles = [...this.originalFiles, ...validFiles];
+            await this.processImages();
+        }
+    }
+
+    private loadImage(file: File): Promise<HTMLImageElement> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e: any) => {
+                const img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = reject;
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async processImages() {
+        if (this.originalFiles.length === 0) {
+            this.selectedFiles = [];
+            this.previewUrls = [];
+            return;
+        }
+
+        this.isProcessing = true;
+        try {
+            const imageElements = await Promise.all(this.originalFiles.map(file => this.loadImage(file)));
+            const imageRatios = imageElements.map(img => img.width / img.height);
+
+            // Instagram supported ratios: 1.91:1, 4:5 (0.8), 1:1
+            const targets = [1.91, 0.8, 1.0];
+
+            // For each image, find the closest target ratio
+            const closestTargets = imageRatios.map(r => {
+                return targets.reduce((prev, curr) => Math.abs(curr - r) < Math.abs(prev - r) ? curr : prev);
+            });
+
+            // If multiple images, pick the majority ratio
+            let bestRatio: number;
+            if (closestTargets.length === 1) {
+                bestRatio = closestTargets[0];
+            } else {
+                const counts: any = {};
+                closestTargets.forEach(t => counts[t] = (counts[t] || 0) + 1);
+                bestRatio = parseFloat(Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b));
+            }
+
+            this.selectedAspectRatio = bestRatio;
+
+            const processedFiles: File[] = [];
+            const processedUrls: string[] = [];
+
+            for (let i = 0; i < imageElements.length; i++) {
+                const img = imageElements[i];
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d')!;
+
+                // Use 1080p as base for high quality
+                let targetWidth, targetHeight;
+                if (bestRatio === 1.0) {
+                    targetWidth = targetHeight = 1080;
+                } else if (bestRatio === 0.8) {
+                    targetWidth = 1080;
+                    targetHeight = 1350;
+                } else { // 1.91
+                    targetWidth = 1080;
+                    targetHeight = Math.round(1080 / 1.91);
                 }
 
-                this.selectedFiles.push(file);
-                const reader = new FileReader();
-                reader.onload = (e: any) => {
-                    this.previewUrls.push(e.target.result);
-                };
-                reader.readAsDataURL(file);
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+
+                // Fill background white
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, targetWidth, targetHeight);
+
+                // Calculate scaling to "contain"
+                const imgRatio = img.width / img.height;
+                let drawWidth, drawHeight;
+
+                if (imgRatio > bestRatio) {
+                    // Image is wider than target
+                    drawWidth = targetWidth;
+                    drawHeight = targetWidth / imgRatio;
+                } else {
+                    // Image is taller than target
+                    drawHeight = targetHeight;
+                    drawWidth = targetHeight * imgRatio;
+                }
+
+                const x = (targetWidth - drawWidth) / 2;
+                const y = (targetHeight - drawHeight) / 2;
+
+                ctx.drawImage(img, x, y, drawWidth, drawHeight);
+
+                const blob = await new Promise<Blob>((resolve) => canvas.toBlob(b => resolve(b!), 'image/jpeg', 0.9));
+                const newFile = new File([blob], this.originalFiles[i].name, { type: 'image/jpeg' });
+
+                processedFiles.push(newFile);
+                processedUrls.push(canvas.toDataURL('image/jpeg', 0.9));
             }
+
+            this.selectedFiles = processedFiles;
+            this.previewUrls = processedUrls;
+        } catch (error) {
+            console.error('Error processing images:', error);
+        } finally {
+            this.isProcessing = false;
         }
     }
 
@@ -140,13 +246,11 @@ export class CreatePostsComponent {
     private reorderItems(fromIndex: number, toIndex: number) {
         if (fromIndex === toIndex) return;
 
-        // Move selectedFile
-        const [file] = this.selectedFiles.splice(fromIndex, 1);
-        this.selectedFiles.splice(toIndex, 0, file);
+        // Move originalFile
+        const [file] = this.originalFiles.splice(fromIndex, 1);
+        this.originalFiles.splice(toIndex, 0, file);
 
-        // Move previewUrl
-        const [url] = this.previewUrls.splice(fromIndex, 1);
-        this.previewUrls.splice(toIndex, 0, url);
+        this.processImages();
     }
 
     draggedIndex: number | null = null;
@@ -205,8 +309,8 @@ export class CreatePostsComponent {
     }
 
     removeFile(index: number) {
-        this.selectedFiles.splice(index, 1);
-        this.previewUrls.splice(index, 1);
+        this.originalFiles.splice(index, 1);
+        this.processImages();
     }
 
     onSubmit() {

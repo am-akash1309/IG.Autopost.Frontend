@@ -13,6 +13,7 @@ export class PostCardComponent {
 
     getStatusClass(post: any): string {
         if (post.is_published) return 'status-published';
+        if (post.is_manual_approved === true) return 'status-approved';
         if (post.is_manual_approved === false || (post.is_ai_approved === false && !post.needs_manual_review)) return 'status-rejected';
         if (post.needs_manual_review) return 'status-review';
         if (post.is_ai_approved) return 'status-approved';
@@ -21,6 +22,7 @@ export class PostCardComponent {
 
     getStatusLabel(post: any): string {
         if (post.is_published) return 'Published';
+        if (post.is_manual_approved === true) return 'Approved';
         if (post.is_manual_approved === false || (post.is_ai_approved === false && !post.needs_manual_review)) return 'Rejected';
         if (post.needs_manual_review) return 'Needs Review';
         if (post.is_ai_approved) return 'AI Approved';
