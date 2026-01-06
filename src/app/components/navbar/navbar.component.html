@@ -34,8 +34,10 @@
             <div class="user-section" *ngIf="isLoggedIn; else loginTemplate">
                 <div class="user-pill">
                     <div class="avatar">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <img *ngIf="user?.profile_pic" [src]="user.profile_pic" [alt]="user.username"
+                            class="profile-img">
+                        <svg *ngIf="!user?.profile_pic" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>

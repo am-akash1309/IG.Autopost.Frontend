@@ -7,7 +7,6 @@ import { Observable, BehaviorSubject, tap } from 'rxjs';
 })
 export class ApiService {
     private readonly BASE_URL = 'https://pet-adoption-api-6y2a.onrender.com/igautopostapi';
-    // private readonly BASE_URL = 'http://localhost:5000/igautopostapi';
     private readonly TOKEN_KEY = 'auth_token';
     private readonly USER_KEY = 'auth_user';
 

@@ -115,7 +115,12 @@
                                 <tr *ngFor="let u of stats.users">
                                     <td>
                                         <div class="user-cell">
-                                            <div class="avatar-sm">{{ u.username.charAt(0).toUpperCase() }}</div>
+                                            <div class="avatar-sm">
+                                                <img *ngIf="u.profile_pic" [src]="u.profile_pic" [alt]="u.username"
+                                                    class="table-profile-img">
+                                                <ng-container *ngIf="!u.profile_pic">{{
+                                                    u.username.charAt(0).toUpperCase() }}</ng-container>
+                                            </div>
                                             <span class="username">{{ u.username }}</span>
                                         </div>
                                     </td>
